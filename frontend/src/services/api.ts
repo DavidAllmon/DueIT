@@ -20,6 +20,9 @@ api.interceptors.request.use((config) => {
 export const login = (email: string, password: string) => api.post('/users/login', { email, password });
 export const register = (email: string, password: string) => api.post('/users/register', { email, password });
 export const getProfile = () => api.get('/users/profile');
+export const changePassword = (currentPassword: string, newPassword: string) => 
+  api.put('/users/change-password', { currentPassword, newPassword });
+export const deleteAccount = () => api.delete('/users/delete-account');
 
 export const getBills = () => api.get('/bills');
 export const addBill = async (billData: any) => {
