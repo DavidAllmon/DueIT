@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
-import { FaHome, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt } from 'react-icons/fa';
 
 export default function Navbar() {
   const { logout } = useAuth();
@@ -17,11 +17,7 @@ export default function Navbar() {
             </Link>
           </div>
           <div className="flex items-center">
-            <Link href="/dashboard" className="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center">
-              <FaHome className="mr-2" />
-              Dashboard
-            </Link>
-            <Link href="/profile" className="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out ml-4 flex items-center">
+            <Link href="/profile" className="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out flex items-center">
               <FaUser className="mr-2" />
               Profile
             </Link>

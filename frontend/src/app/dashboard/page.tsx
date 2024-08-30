@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import BillList from '@/components/BillList';
 import AddBillForm from '@/components/AddBillForm';
-import { FaPlus, FaChartLine, FaCalendarAlt } from 'react-icons/fa';
+import { FaPlus, FaChartLine, FaCalendarAlt, FaCheckCircle } from 'react-icons/fa';
 import { getBills } from '@/services/api';
 
 interface Bill {
@@ -33,6 +33,7 @@ export default function DashboardPage() {
   };
 
   const totalDue = bills.reduce((sum, bill) => sum + (bill.isPaid ? 0 : bill.amount), 0);
+  const totalPaid = bills.reduce((sum, bill) => sum + (bill.isPaid ? bill.amount : 0), 0);
   const billsThisMonth = bills.filter(bill => {
     const dueDate = new Date(bill.dueDate);
     const now = new Date();
@@ -47,16 +48,21 @@ export default function DashboardPage() {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <DashboardCard
             title="Total Due"
             value={`$${totalDue.toFixed(2)}`}
             icon={<FaChartLine className="text-blue-500" />}
           />
           <DashboardCard
+            title="Total Paid"
+            value={`$${totalPaid.toFixed(2)}`}
+            icon={<FaCheckCircle className="text-green-500" />}
+          />
+          <DashboardCard
             title="Bills This Month"
             value={billsThisMonth.toString()}
-            icon={<FaCalendarAlt className="text-green-500" />}
+            icon={<FaCalendarAlt className="text-yellow-500" />}
           />
           <DashboardCard
             title="Overdue Bills"
