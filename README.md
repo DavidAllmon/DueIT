@@ -34,7 +34,7 @@ DueIt is a web application designed to help users manage and track their bills e
 ### Prerequisites
 
 - Node.js (v14 or later)
-- MongoDB
+- MongoDB.
 
 ### Installation
 
