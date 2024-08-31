@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { encrypt, decrypt } = require('../utils/encryption');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -12,6 +13,19 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  smtpSettings: {
+    host: String,
+    port: Number,
+    secure: Boolean,
+    auth: {
+      user: String,
+      pass: {
+        type: String,
+        set: (value) => encrypt(value),
+        get: (value) => value ? decrypt(value) : value
+      }
+    },
   },
 }, { timestamps: true });
 

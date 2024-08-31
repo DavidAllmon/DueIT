@@ -23,11 +23,15 @@ export const getProfile = () => api.get('/users/profile');
 export const changePassword = (currentPassword: string, newPassword: string) => 
   api.put('/users/change-password', { currentPassword, newPassword });
 export const deleteAccount = () => api.delete('/users/delete-account');
+export const updateSmtpSettings = (settings: any) => api.put('/users/smtp-settings', settings);
+export const testSmtpSettings = () => api.post('/users/test-smtp');
 
 export const getBills = () => api.get('/bills');
 export const addBill = async (billData: any) => {
   try {
+    console.log('Sending bill data:', billData); // Add this line
     const response = await api.post('/bills', billData);
+    console.log('Received response:', response.data); // Add this line
     return response.data;
   } catch (error) {
     handleApiError(error, 'Failed to add bill');

@@ -11,10 +11,7 @@ exports.getBills = async (req, res) => {
 
 exports.addBill = async (req, res) => {
   try {
-    const { name, amount, dueDate } = req.body;
-    const reminderDate = new Date(dueDate);
-    reminderDate.setDate(reminderDate.getDate() - 1); // Set reminder to 1 day before due date
-
+    const { name, amount, dueDate, reminderDate } = req.body;
     const bill = new Bill({
       user: req.user._id,
       name,
@@ -22,7 +19,6 @@ exports.addBill = async (req, res) => {
       dueDate,
       reminderDate,
     });
-
     const createdBill = await bill.save();
     res.status(201).json(createdBill);
   } catch (error) {

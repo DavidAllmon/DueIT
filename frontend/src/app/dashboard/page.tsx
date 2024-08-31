@@ -12,6 +12,7 @@ interface Bill {
   name: string;
   amount: number;
   dueDate: string;
+  reminderDate: string;
   isPaid: boolean;
 }
 

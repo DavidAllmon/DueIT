@@ -11,6 +11,7 @@ export default function AddBillForm({ onSuccess }: AddBillFormProps) {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [reminderDays, setReminderDays] = useState('7'); // Default to 7 days
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -18,7 +19,7 @@ export default function AddBillForm({ onSuccess }: AddBillFormProps) {
     e.preventDefault();
     setError('');
 
-    if (!name || !amount || !dueDate) {
+    if (!name || !amount || !dueDate || !reminderDays) {
       setError('All fields are required');
       return;
     }
@@ -28,22 +29,28 @@ export default function AddBillForm({ onSuccess }: AddBillFormProps) {
       return;
     }
 
+    if (isNaN(Number(reminderDays)) || Number(reminderDays) < 0) {
+      setError('Reminder days must be a non-negative number');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const reminderDate = new Date(dueDate);
-      reminderDate.setDate(reminderDate.getDate() - 1);
+      const dueDateUTC = new Date(dueDate + 'T00:00:00Z');
+      const reminderDateUTC = new Date(dueDateUTC);
+      reminderDateUTC.setUTCDate(dueDateUTC.getUTCDate() - Number(reminderDays));
       
       await addBill({ 
         name, 
         amount: Number(amount), 
-        dueDate,
-        reminderDate: reminderDate.toISOString().split('T')[0]
+        dueDate: dueDateUTC.toISOString(),
+        reminderDate: reminderDateUTC.toISOString()
       });
       
       setName('');
       setAmount('');
       setDueDate('');
-      // You might want to refresh the bill list here or use some state management solution
+      setReminderDays('7');
       onSuccess();
     } catch (err) {
       console.error('Error adding bill:', err);
@@ -65,7 +72,7 @@ export default function AddBillForm({ onSuccess }: AddBillFormProps) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="w-full p-2 border rounded text-gray-800" // Added text-gray-800
+          className="w-full p-2 border rounded text-gray-800"
         />
       </div>
       <div>
@@ -78,7 +85,7 @@ export default function AddBillForm({ onSuccess }: AddBillFormProps) {
           required
           min="0.01"
           step="0.01"
-          className="w-full p-2 border rounded text-gray-800" // Added text-gray-800
+          className="w-full p-2 border rounded text-gray-800"
         />
       </div>
       <div>
@@ -89,7 +96,19 @@ export default function AddBillForm({ onSuccess }: AddBillFormProps) {
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
           required
-          className="w-full p-2 border rounded text-gray-800" // Added text-gray-800
+          className="w-full p-2 border rounded text-gray-800"
+        />
+      </div>
+      <div>
+        <label htmlFor="reminderDays" className="block mb-2">Remind Me (Days Before Due Date)</label>
+        <input
+          type="number"
+          id="reminderDays"
+          value={reminderDays}
+          onChange={(e) => setReminderDays(e.target.value)}
+          required
+          min="0"
+          className="w-full p-2 border rounded text-gray-800"
         />
       </div>
       <button 

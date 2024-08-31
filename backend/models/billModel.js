@@ -20,13 +20,13 @@ const billSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  isPaid: {
-    type: Boolean,
-    default: false,
-  },
   reminderDate: {
     type: Date,
     required: true,
+  },
+  isPaid: {
+    type: Boolean,
+    default: false,
   },
 }, { timestamps: true });
 

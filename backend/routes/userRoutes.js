@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const router = express.Router();
-const { registerUser, loginUser, getProfile, changePassword, deleteAccount } = require('../controllers/userController');
+const { registerUser, loginUser, getProfile, changePassword, deleteAccount, updateSmtpSettings, testSmtpSettings } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
 // TODO: Implement user controller functions
@@ -40,5 +40,7 @@ router.post(
 router.get('/profile', protect, getProfile);
 router.put('/change-password', protect, changePassword);
 router.delete('/delete-account', protect, deleteAccount);
+router.put('/smtp-settings', protect, updateSmtpSettings);
+router.post('/test-smtp', protect, testSmtpSettings);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const { sendEmail } = require('../utils/emailService');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -85,6 +86,60 @@ exports.deleteAccount = async (req, res) => {
     await User.findByIdAndDelete(req.user._id);
     // You might want to delete user's bills here as well
     res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.updateSmtpSettings = async (req, res) => {
+  try {
+    const { host, port, secure, user, pass } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        smtpSettings: {
+          host,
+          port,
+          secure,
+          auth: { user, pass },
+        },
+      },
+      { new: true }
+    ).select('-password');
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.testSmtpSettings = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user.smtpSettings) {
+      return res.status(400).json({ message: 'SMTP settings not configured' });
+    }
+
+    const smtpSettings = {
+      ...user.smtpSettings,
+      auth: {
+        user: user.smtpSettings.auth.user,
+        pass: user.smtpSettings.auth.pass // This will be automatically decrypted
+      }
+    };
+
+    const testResult = await sendEmail(
+      smtpSettings,
+      user.email,
+      'Test Email from DueIt',
+      'This is a test email to verify your SMTP settings.'
+    );
+
+    if (testResult) {
+      res.json({ message: 'Test email sent successfully' });
+    } else {
+      res.status(500).json({ message: 'Failed to send test email' });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

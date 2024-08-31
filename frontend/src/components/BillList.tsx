@@ -8,6 +8,7 @@ interface Bill {
   name: string;
   amount: number;
   dueDate: string;
+  reminderDate: string;
   isPaid: boolean;
 }
 
@@ -35,6 +36,18 @@ export default function BillList({ bills, onBillUpdate }: BillListProps) {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-US', { timeZone: 'UTC' }).split(',')[0];
+  };
+
+  const calculateReminderDays = (dueDate: string, reminderDate: string) => {
+    const due = new Date(dueDate);
+    const reminder = new Date(reminderDate);
+    const diffTime = Math.abs(due.getTime() - reminder.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   if (bills.length === 0) return <div className="text-center py-4">No bills found.</div>;
 
   return (
@@ -45,6 +58,7 @@ export default function BillList({ bills, onBillUpdate }: BillListProps) {
             <th className="px-4 py-2 text-left">Name</th>
             <th className="px-4 py-2 text-left">Amount</th>
             <th className="px-4 py-2 text-left">Due Date</th>
+            <th className="px-4 py-2 text-left">Reminder</th>
             <th className="px-4 py-2 text-left">Status</th>
             <th className="px-4 py-2 text-left">Actions</th>
           </tr>
@@ -54,7 +68,8 @@ export default function BillList({ bills, onBillUpdate }: BillListProps) {
             <tr key={bill._id} className="border-b dark:border-gray-600">
               <td className="px-4 py-2">{bill.name}</td>
               <td className="px-4 py-2">${bill.amount.toFixed(2)}</td>
-              <td className="px-4 py-2">{new Date(bill.dueDate).toLocaleDateString()}</td>
+              <td className="px-4 py-2">{formatDate(bill.dueDate)}</td>
+              <td className="px-4 py-2">{calculateReminderDays(bill.dueDate, bill.reminderDate)} days before</td>
               <td className="px-4 py-2">
                 <span className={`px-2 py-1 rounded-full text-xs ${bill.isPaid ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}`}>
                   {bill.isPaid ? 'Paid' : 'Unpaid'}
